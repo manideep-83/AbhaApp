@@ -1,5 +1,6 @@
 
 const urls = require('./../urls')
+require('dotenv').config()
 class SessionController{
     constructor(){}
     generateSession(data){
@@ -10,7 +11,7 @@ class SessionController{
               headers: {
                 'Content-Type': 'application/json', // Ensures the server treats the request body as JSON
               },
-              body: JSON.stringify(data), // Converts JavaScript object to a JSON string
+              body: JSON.stringify(data), // Converts    object to a JSON string
             })
               .then(response => {
                 if (!response.ok) {

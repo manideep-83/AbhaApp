@@ -1,28 +1,16 @@
 const urls = require('./../urls');
 class AadharController {
-    constructor() {}
+    constructor() { }
 
-    registerUser(data) {
-        return new Promise(async (done, reject) => {
-            try {
-                const encryptedAadhar = await this.encryptAadhar(data.aadhar);
-                console.log(encryptedAadhar); // Corrected the variable name
-                
-            } catch (err) {
-                console.log(err);
-                reject(err); // Reject the promise if an error occurs
-            }
-        });
-    }
 
-    async encryptAadhar(aadharNumber) {
+    async encrypt(aadharNumber) {
         try {
             const body = {
                 "textToEncrypt": aadharNumber + "",
-                "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK4LdQKvE3H/Q0BbW0bg85oYf5oN0IAeoTFTiBBbzXEsQt1swdOvr9r/Gun9F+QQyRTomrtfTC7IzOXlpOc/OfsCAwEAAQ==",
-                "privateKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK4LdQKvE3H/Q0BbW0bg85oYf5oN0IAeoTFTiBBbzXEsQt1swdOvr9r/Gun9F+QQyRTomrtfTC7IzOXlpOc/OfsCAwEAAQ==",
+                "publicKey":"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAstWB95C5pHLXiYW59qyO4Xb+59KYVm9Hywbo77qETZVAyc6VIsxU+UWhd/k/Yt jZibCznB+HaXWX9TVTFs9Nwgv7LRGq5uLczpZQDrU7dnGkl/urRA8p0Jv/f8T0MZdFWQgks91uFffeBmJOb58u68ZRxSYGMPe4hb9XXKDVsg oSJaRNYviH7RgAI2QhTCwLEiMqIaUX3p1SAc178ZlN8qHXSSGXvhDR1GKM+y2DIyJqlzfik7lD14mDY/I4lcbftib8cv7llkybtjX1AayfZp4XpmIXK Wv8nRM488/jOAF81Bi13paKgpjQUUuwq9tb5Qd/DChytYgBTBTJFe7irDFCmTIcqPr8+IMB7tXA3YXPp3z605Z6cGoYxezUm2Nz2o6oUmarD UntDhq/PnkNergmSeSvS8gD9DHBuJkJWZweG3xOPXiKQAUBr92mdFhJGm6fitO5jsBxgpmulxpG0oKDy9lAOLWSqK92JMcbMNHn4wRikdI 9HSiXrrI7fLhJYTbyU3I4v5ESdEsayHXuiwO/1C8y56egzKSw44GAtEpbAkTNEEfK5H5R0QnVBIXOvfeF4tzGvmkfOO6nNXU3o/WAdOyV3xSQ 9dqLY5MEL4sJCGY1iJBIAQ452s8v0ynJG5Yq+8hNhsCVnklCzAlsIzQpnSVDUVEzv17grVAw078CAwEAAQ==",
+                "privateKey":"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAstWB95C5pHLXiYW59qyO4Xb+59KYVm9Hywbo77qETZVAyc6VIsxU+UWhd/k/Yt jZibCznB+HaXWX9TVTFs9Nwgv7LRGq5uLczpZQDrU7dnGkl/urRA8p0Jv/f8T0MZdFWQgks91uFffeBmJOb58u68ZRxSYGMPe4hb9XXKDVsg oSJaRNYviH7RgAI2QhTCwLEiMqIaUX3p1SAc178ZlN8qHXSSGXvhDR1GKM+y2DIyJqlzfik7lD14mDY/I4lcbftib8cv7llkybtjX1AayfZp4XpmIXK Wv8nRM488/jOAF81Bi13paKgpjQUUuwq9tb5Qd/DChytYgBTBTJFe7irDFCmTIcqPr8+IMB7tXA3YXPp3z605Z6cGoYxezUm2Nz2o6oUmarD UntDhq/PnkNergmSeSvS8gD9DHBuJkJWZweG3xOPXiKQAUBr92mdFhJGm6fitO5jsBxgpmulxpG0oKDy9lAOLWSqK92JMcbMNHn4wRikdI 9HSiXrrI7fLhJYTbyU3I4v5ESdEsayHXuiwO/1C8y56egzKSw44GAtEpbAkTNEEfK5H5R0QnVBIXOvfeF4tzGvmkfOO6nNXU3o/WAdOyV3xSQ 9dqLY5MEL4sJCGY1iJBIAQ452s8v0ynJG5Yq+8hNhsCVnklCzAlsIzQpnSVDUVEzv17grVAw078CAwEAAQ==",
                 "keyType": "publicKeyForEncryption",
-                "cipherType": "RSA/ECB/PKCS1Padding"
+                "cipherType": "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"
             };
 
             const response = await fetch(urls.encrypt_url, {

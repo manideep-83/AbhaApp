@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+const raw = JSON.stringify({
+  "clientId": "SBXTEST_03",
+  "clientSecret": "ca19aa52-5635-431e-9dd2-e363ecd90a81",
+  "grantType": "client_credentials",
+  "refreshToken": "string"
+});
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+async function getToken() {
+ 
+}
+
+// Call the function to get the token
+getToken();
+
+    </script>
+</body>
+</html>
