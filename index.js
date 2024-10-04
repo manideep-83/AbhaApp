@@ -93,10 +93,10 @@ app.post('/enrol/byaadhar', async (req, res)=>{
   const encryptedOtp = await aadharController.encrypt(otp);
   var myHeaders = new Headers();
   const timestamp = new Date().toISOString();
-myHeaders.append("Content-Type", "application/json");
-myHeaders.append("REQUEST-ID", "abdc018d-1e94-4834-9070-788af48b17b3");
-myHeaders.append("TIMESTAMP", timestamp);
-myHeaders.append("Authorization",  `Bearer ${secret.accessToken}`);
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("REQUEST-ID", "abdc018d-1e94-4834-9070-788af48b17b3");
+  myHeaders.append("TIMESTAMP", timestamp);
+  myHeaders.append("Authorization",  `Bearer ${secret.accessToken}`);
 
 var raw = JSON.stringify({
   "authData": {
@@ -114,8 +114,7 @@ var raw = JSON.stringify({
     "code": "abha-enrollment",
     "version": "1.4"
   }
-});
-
+})
 var requestOptions = {
   method: 'POST',
   headers: myHeaders,
@@ -134,4 +133,81 @@ fetch("https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/enrol/byAadhaar", requ
   catch(err){
     res.status(404).send('Invalid OTP')
   }
+});
+
+// mobile otp generation to verify the aadhar card
+//mobile otp
+app.post('/requestMobileOtp',async(req,res)=>{
+  var myHeaders = new Headers();
+  const timestamp = new Date().toISOString();
+  console.log(req.body.mobile);
+  const encryptedMobile=await aadharController.encrypt(req.body.mobile);
+  console.log(encryptedMobile);
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("REQUEST-ID", "9e01983a-5e78-4aa1-a241-e8c43ee56a98");
+  myHeaders.append("TIMESTAMP", timestamp);
+  myHeaders.append("Authorization", `Bearer ${secret.accessToken}`);
+  // console.log("id", encryptedMobile.encryptedOutput);
+  var raw = JSON.stringify({
+    "txnId": "",
+    "scope": [
+      "abha-enrol",
+      "mobile-verify"
+    ],
+    "loginHint": "mobile",
+    "loginId": `${ encryptedMobile.encryptedOutput }`,
+    "otpSystem": "abdm"
+  });
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  fetch("https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/request/otp", requestOptions)
+    .then(response => response.text())
+    .then(result => res.status(200).json({'res':result}))
+    .catch(error => res.status(400).json({'error': error}));
+});
+
+//verification
+app.post('/verifymobileotp',async(req,res)=>{
+  var myHeaders = new Headers();
+  const timestamp=new Date().toISOString();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("REQUEST-ID", "8223a00e-dcbc-481e-929d-ea1a5df1c9a3");
+  myHeaders.append("TIMESTAMP", timestamp);
+  myHeaders.append("Authorization", `Bearer ${secret.accessToken}`);
+  const encryptedotp=await aadharController.encrypt(req.body.otp);
+
+var raw = JSON.stringify({
+  "scope": [
+    "abha-enrol",
+    "mobile-verify"
+  ],
+  "authData": {
+    "authMethods": [
+      "otp"
+    ],
+    "otp": {
+      "timeStamp": timestamp,
+      "txnId": "transaction id",
+      "otpValue": encryptedotp.encryptedOutput
+    }
+  }
+});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/auth/byAbdm", requestOptions)
+  .then(response => response.text())
+  .then(result => res.status(200).json({'res':result}))
+  .catch(error => res.status(400).json({'error': error}));
 })
