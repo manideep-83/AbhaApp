@@ -89,42 +89,39 @@ fetch("https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/request/otp", requestO
 app.post('/enrol/byaadhar', async (req, res) => {
   const { otp, txnId } = req.body;
   console.log(otp, ' ', txnId);
-  
-  if (!otp || !txnId) {
-    return res.status(400).send('OTP or Transaction ID missing');
+  try{
+  const encryptedOtp = await aadharController.encrypt(otp);
+  var myHeaders = new Headers();
+  const timestamp = new Date().toISOString();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("REQUEST-ID", "abdc018d-1e94-4834-9070-788af48b17b3");
+myHeaders.append("TIMESTAMP", timestamp);
+myHeaders.append("Authorization",  `Bearer ${secret.accessToken}`);
+
+var raw = JSON.stringify({
+  "authData": {
+    "authMethods": [
+      "otp"
+    ],
+    "otp": {
+      "timeStamp":timestamp,
+      "txnId": txnId,
+      "otpValue": encryptedOtp,
+      "mobile": "9347549195"
+    }
+  },
+  "consent": {
+    "code": "abha-enrollment",
+    "version": "1.4"
   }
+});
 
-  try {
-    const encryptedOtp = await aadharController.encrypt(otp);
-    var myHeaders = new Headers();
-    const timestamp = new Date().toISOString(); // Correct ISO format for timestamp
-    
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("REQUEST-ID", "abdc018d-1e94-4834-9070-788af48b17b3");
-    myHeaders.append("TIMESTAMP", timestamp);
-    myHeaders.append("Authorization", `Bearer ${secret.accessToken}`);
-
-    var raw = JSON.stringify({
-      "authData": {
-        "authMethods": ["otp"],
-        "otp": {
-          "txnId": txnId, // Ensure txnId is valid
-          "otpValue": encryptedOtp,
-          "mobile": "9347549195"
-        }
-      },
-      "consent": {
-        "code": "abha-enrollment",
-        "version": "1.4"
-      }
-    });
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-    };
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
 
     fetch("https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/enrol/byAadhaar", requestOptions)
       .then(response => response.json())
@@ -140,4 +137,4 @@ app.post('/enrol/byaadhar', async (req, res) => {
     console.error('Encryption Error:', err);
     res.status(400).send('Invalid OTP');
   }
-});
+})
